@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><!DOCTYPE html>
+<html>
+    <head>
+        <title>Ohell Score Card</title>
+        <script type="text/javascript">
+        var game = [];
+        var tempNum = 0;
+        var turnpart = 1;
+        var save;
+        var time = 1;
+        var input;
+        var t;
+        var turningame = 1;
+        var topofgame = 8;
+        var times = 1;
+        var donepart = 0;
+        var turnorder = 0;
+        var totalbid = 0;
+        var totaltook = 0;
+        var string = "";
+        var visScore = "visible"
+        var totalturn = 0;
+        var store = [];
+        var beforeVis = "null"
+        var reportArr = []
+        var totalTrick = 0;
+        function start(event){
+                var code = event.keyCode;
+                if(code == 13) {
+                    game.push(document.getElementById("num").value);
+                    document.getElementById("num").value = "";
+                }
+            }
+            function done(){
+                topofgame = document.getElementById("num").value;
+                document.getElementById("num").style.visibility = "hidden";
+                document.getElementById("done").style.visibility = "hidden";
+                document.getElementById("turnofgame").innerHTML = "turn: " + turningame;
+                document.getElementById("divorder").innerHTML = game[turnorder%(game.length-1)] + " goes first"
+                var i = 0;
+                while(i<game.length)
+                {
+                    var div = document.createElement("div");
+                    div.id = game[i] + "name";
+                    div.style.marginLeft = (((80)/game.length)*(i)+18)+"%";
+                    div.innerHTML=game[i];
+                    div.style.marginTop = "2%";
+                    div.style.position = "absolute";
+                    div.setAttribute("onclick", "change(this)");
+                    div.style.fontSize=Math.min((((80)/game.length)/game[i].length), 5)+"vw";
+                    document.body.appendChild(div);
+                    i+=1;
+                }
+                
+                var i = 0;
+                while(i<game.length)
+                {
+                    var div = document.createElement("div");
+                    div.id = game[i] + "bid";
+                    div.style.marginLeft = (((80)/game.length)*(i)+20)+"%";
+                    div.style.marginTop = "10%";
+                    div.style.position = "absolute";
+                    div.innerHTML="-";
+                    div.style.fontSize="400%";
+                    document.body.appendChild(div);
+                    i+=1;
+                }
+                var div = document.createElement("div");
+                    div.style.marginLeft = "0%";
+                    div.style.marginTop = "2%";
+                    div.style.position = "absolute";
+                    div.innerHTML="Name";
+                    div.style.fontSize="400%";
+                    div.style.width = "10%"
+                    div.id = "name";
+                    document.body.appendChild(div);
+                    var div = document.createElement("div");
+                    div.style.marginLeft = "0%";
+                    div.style.marginTop = "10%";
+                    div.style.width = "10%"
+                    div.style.position = "absolute";
+                    div.innerHTML="Bid";
+                    div.style.fontSize="400%";
+                    div.id = "bid";
+                    document.body.appendChild(div);
+                    var div = document.createElement("div");
+                    div.style.marginLeft = "0%";
+                    div.style.marginTop = "18%";
+                    div.style.position = "absolute";
+                    div.innerHTML="Score";
+                    div.style.width = "10%"
+                    div.style.fontSize="400%";
+                    div.id = "score";
+                    document.body.appendChild(div);
+                    makeDiv("12%", "0%","Number Of Tricks Taken:", "", "150%")
+                    makeDiv("18%", "0%","Number Of Tricks Bid:", "", "150%")
+                    makeDiv("24%", "0%","Number Of Bids Made:", "", "150%")
+                    makeDiv("30%", "0%","Average Bid:", "", "200%")
+                    makeDiv("36%", "0%","Average Tricks Taken:", "", "150%")
+                    makeDiv("42%", "0%","Percent of Tricks Taken:", "", "150%")
+                     makeDiv("48%", "0%","Average Bid Per Card:", "", "150%")
+                    for(var i = 0; i<game.length; i++)
+                    {
+                    	makeDiv("10%", (((80)/game.length)*(i)+20)+"%","0", game[i]+"numTrick", "400%")
+                    	makeDiv("16%", (((80)/game.length)*(i)+20)+"%","0", game[i]+"numBid", "400%")
+                		makeDiv("22%", (((80)/game.length)*(i)+20)+"%","0", game[i]+"numBidMade", "400%")
+                    	makeDiv("28%", (((80)/game.length)*(i)+20)+"%","0", game[i]+"avgBid", "400%")
+                    	makeDiv("34%", (((80)/game.length)*(i)+20)+"%","0", game[i]+"avgTricks", "400%")
+                    	makeDiv("40%", (((80)/game.length)*(i)+20)+"%","0", game[i]+"perTr", "400%")
+                    	makeDiv("46%", (((80)/game.length)*(i)+20)+"%","0", game[i]+"perCard", "400%")
+                    }
+                var i = 0;
+                while(i<game.length)
+                {
+                    var div = document.createElement("div");
+                    div.id = game[i] + "score";
+                    div.style.marginLeft = (((80)/game.length)*(i)+20)+"%";
+                    div.style.marginTop = "18%";
+                    div.style.position = "absolute";
+                    div.style.fontSize="400%";
+                    i+=1;
+                    div.innerHTML=0;
+                    div.setAttribute("onclick", "change(this)");
+                    document.body.appendChild(div);
+                }
+                var div = document.createElement("div");
+                div.style.marginLeft = (((80)/game.length)*(tempNum)+1)+"%";
+                    div.style.marginTop = (((60)/(topofgame*2))*(totalturn)+7)+"%";
+                    div.innerHTML=1;
+                    div.setAttribute("class","scorecard")
+                    if(visScore == "hidden")
+                    {
+                    	div.style.visibility = "visible"
+                    }
+                    store.push(div);
+                    document.body.appendChild(div);
+                window.addEventListener("keypress", turn, false);
+            }
+	 	     function turn(e){
+	 	     	console.log(e.keyCode)
+	 		if(/[0-9]/.test(String.fromCharCode(e.keyCode)) && time==1)
+	 		{
+	 		    if(turnpart == 1)
+	 		    {
+	 		    	var div = document.createElement("div");
+                    div.style.marginLeft = (((80)/game.length)*(tempNum)+19)+"%";
+                    div.style.marginTop = (((60)/(topofgame*2))*(totalturn)+7)+"%";
+                    div.innerHTML=String.fromCharCode(e.keyCode);
+                    div.setAttribute("class","scorecardbid")
+                    div.id = game[tempNum]+totalturn+"sub";
+                    if(visScore == "hidden")
+                    {
+                    	div.style.visibility = "visible"
+                    }
+                    store.push(div);
+                    document.getElementById(game[tempNum]+"numBid").innerHTML=parseInt(document.getElementById(game[tempNum]+"numBid").innerHTML)+parseInt(String.fromCharCode(e.keyCode))
+                    document.body.appendChild(div);
+	 		        document.getElementById(game[tempNum] + "bid").innerHTML = String.fromCharCode(e.keyCode);
+	 		        tempNum+=1;
+	 		        totalbid+=parseInt(String.fromCharCode(e.keyCode));
+	 		        
+	 		        if(tempNum==game.length)
+	 		        {
+	 		            var addon = "s"
+	 		            if(totalbid-turningame == -1 || totalbid-turningame == 1)
+	 		            {
+	 		                addon = ""
+	 		            }
+	 		            if(totalbid>turningame)
+	 		            {
+	 		                document.getElementById("overunder").innerHTML = "Overbid by " + parseInt(totalbid-turningame) + " trick" + addon;
+	 		            }
+	 		            else if(totalbid<turningame){
+	 		                document.getElementById("overunder").innerHTML = "Underbid by " + parseInt(turningame-totalbid) + " trick" + addon;
+	 		            }
+	 		            else
+	 		            {
+	 		               document.getElementById("overunder").innerHTML = "Everyone can be happy"; 
+	 		            }
+	 		            totalTrick+=turningame;
+	 		            tempNum = 0;
+	 		            turnpart*=-1;
+	 		            totaltook = 0;
+	 		            string = ""; 
+	 		            var msg = new SpeechSynthesisUtterance();
+	 		            var voices = window.speechSynthesis.getVoices();
+	 		            // msg.voice = voices[4]
+	 		            msg.text = document.getElementById("overunder").innerHTML + " and " + document.getElementById("divorder").innerHTML;
+						// msg.lang = 'en-US';
+						window.speechSynthesis.speak(msg);
+	 		        }
+	 		    }
+	 		    else
+	 		    {
+	 		        var char = parseInt(String.fromCharCode(e.keyCode));
+	 		        totaltook+=char; 
+	 		       
+	 				string+=game[tempNum] + " had " + parseInt(document.getElementById(game[tempNum] + "score").innerHTML)+ " ";
+	 		        if(char == document.getElementById(game[tempNum] + "bid").innerHTML)
+	 		        {
+	 		            if(char==0)
+	 		            {
+	 		                document.getElementById(game[tempNum] + "score").innerHTML=parseInt(document.getElementById(game[tempNum] + "score").innerHTML)+parseInt(5);
+	 		            }
+	 		            else
+	 		            {
+	 		                document.getElementById(game[tempNum] + "score").innerHTML=parseInt(document.getElementById(game[tempNum] + "score").innerHTML)+parseInt((10+char))
+	 		            }
+	 		        }
+	 		        else
+	 		        {
+	 		            document.getElementById(game[tempNum] + "score").innerHTML-=Math.max(char, document.getElementById(game[tempNum] + "bid").innerHTML)
+	 		        }
+	 		        document.getElementById(game[tempNum]+"numTrick").innerHTML=parseInt(document.getElementById(game[tempNum]+"numTrick").innerHTML)+char
+	 		        if(char == document.getElementById(game[tempNum] + "bid").innerHTML)
+	 		        {
+	 		        	document.getElementById(game[tempNum]+"numBidMade").innerHTML=parseInt(document.getElementById(game[tempNum]+"numBidMade").innerHTML)+parseInt(1)
+	 		        }
+	 		         var div = document.createElement("div");
+                    div.style.marginLeft = (((80)/game.length)*(tempNum)+20)+"%";
+                    div.style.marginTop = (((60)/(topofgame*2))*(totalturn)+7)+"%";
+                    div.innerHTML=document.getElementById(game[tempNum] + "score").innerHTML;
+                    div.setAttribute("class","scorecard")
+                    if(visScore == "hidden")
+                    {
+                    	div.style.visibility = "visible"
+                    }
+                    // document.getElementById(game[tempNum]+totalturn+"sub").style.color = "red";
+                    div.style.color = "red"
+                    if(char == document.getElementById(game[tempNum] + "bid").innerHTML)
+                    {
+                    	// document.getElementById(game[tempNum]+totalturn+"sub").style.color = "green"
+                    	div.style.color = "green"
+                    }
+                    store.push(div);
+                    document.body.appendChild(div);
+	 		        tempNum+=1;
+	 		        if(tempNum==game.length)
+	 		        {
+	 		        	if(totaltook!=turningame)
+	 		        	{
+	 		        		alert(totaltook + " tricks were taken but " + turningame + " tricks were out there" + " before this hand " + string)
+	 		        	}
+	 		        	totalturn++;
+	 		            tempNum = 0;
+	 		            turnpart*=-1;
+	 		            
+	 		            console.log(totalturn)
+	 		            for(var i = 0;i<game.length;i++)
+	 		            {
+	 		            	document.getElementById(game[i]+"avgBid").innerHTML=(parseInt(document.getElementById(game[i]+"numBid").innerHTML)/totalturn).toFixed(2)
+	 		            	document.getElementById(game[i]+"avgTricks").innerHTML=(parseInt(document.getElementById(game[i]+"numTrick").innerHTML)/totalturn).toFixed(2)
+	 		            	document.getElementById(game[i]+"perTr").innerHTML=((parseInt(document.getElementById(game[i]+"numTrick").innerHTML)/totalTrick)*(100)).toFixed(2)
+	 		            	document.getElementById(game[i]+"perCard").innerHTML=((parseInt(document.getElementById(game[i]+"numBid").innerHTML)/totalTrick)*(1)).toFixed(2)
+	 		            }
+	 		            var i = 0;
+	 		            while(i < game.length)
+	 		            {
+	 		                document.getElementById(game[i] + "bid").innerHTML = "-";
+	 		                i+=1;
+	 		            }
+	 		            document.getElementById("overunder").innerHTML = "";
+	 		            totalbid = 0;
+	 		            turnorder+=1;
+	 		            document.getElementById("divorder").innerHTML = game[turnorder%game.length] + " goes first"
+	 		            turningame+=times;
+	 		            var div = document.createElement("div");
+                    div.style.marginLeft = (((80)/game.length)*(tempNum)+1)+"%";
+                    div.style.marginTop = (((60)/(topofgame*2))*(totalturn)+7)+"%";
+                    div.innerHTML=turningame;
+                    div.setAttribute("class","scorecard")
+                    if(visScore == "hidden")
+                    {
+                    	div.style.visibility = "visible"
+                    }
+                    store.push(div);
+                    document.body.appendChild(div);
+	 		            for(var countone = 0; countone < game.length; countone++)
+	 		            {
+	 		                var tempcount = 0
+	 		                if(countone != game.length-1)
+	 		                {
+	 		                    tempcount = countone+1
+	 		                }
+	 		                var bol = true;
+	 		                while(tempcount != countone)
+	 		                {
+	 		                    if(parseInt(document.getElementById(game[tempcount] + "score").innerHTML)>parseInt(document.getElementById(game[countone] + "score").innerHTML))
+	 		                    {
+	 		                        bol = false;
+	 		                    }
+	 		                    if(tempcount == game.length-1)
+	 		                    {
+	 		                        tempcount = 0
+	 		                    }
+	 		                    else
+	 		                    {
+	 		                        tempcount++;
+	 		                    }
+	 		                }
+	 		                if(bol)
+	 		                {
+	 		                    document.getElementById(game[countone] + "name").style.fontWeight = "bold"
+	 		                    document.getElementById(game[countone] + "name").style.color = "red"
+	 		                }
+	 		                else
+	 		                {
+	 		                   document.getElementById(game[countone] + "name").style.fontWeight = "normal"
+	 		                    document.getElementById(game[countone] + "name").style.color = "black" 
+	 		                }
+	 		            
+	 		            }
+	 		            if(parseInt(turningame) == parseInt(topofgame))
+	 		            {
+	 		                times*=-1;
+	 		            }
+	 		            document.getElementById("turnofgame").innerHTML = "turn: " + turningame;
+	 		            var sort = [];
+	 		            for(var i = game.length-1; i > -1; i--)
+	 		            {
+	 		            	sort[i] = game[i]
+	 		            }
+	 		            for(var i = game.length; i > 0; i--)
+	 		            {
+	 		            	var max = 0;
+	 		            	for(var t = 0; t < i; t++)
+	 		            	{
+	 		            		if(parseInt(document.getElementById(sort[max] + "score").innerHTML) > parseInt(document.getElementById(sort[t] + "score").innerHTML))
+	 		            		{
+	 		            			max = t
+	 		            		}
+	 		            	}
+	 		            	var tempSort = sort[i-1];
+	 		            	sort[i-1] = sort[max]
+	 		            	sort[max] = tempSort; 
+	 		            }
+	 		            for(var i =0; i<sort.length;i++){
+	 		            var msg = new SpeechSynthesisUtterance();
+	 		            var voices = window.speechSynthesis.getVoices();
+	 		            // msg.voice = voices[4]
+	 		            msg.voiceURI = 'native';
+	 		            msg.text = sort[i] + " has " + document.getElementById(sort[i] + "score").innerHTML;
+	 		            if(turningame<1 && i==0 && parseInt(document.getElementById(sort[0] + "score").innerHTML)>parseInt(document.getElementById(sort[1] + "score").innerHTML))         
+	 		            {
+	 		            	msg.text = sort[i] + " won the game with " + document.getElementById(sort[i] + "score").innerHTML + " points";
+	 		            }
+						// msg.lang = 'en-US';
+						window.speechSynthesis.speak(msg);
+	 		            }
+	 		            
+	 		        }
+	 		        
+	 		    }
+	 		}
+	 		if(e.keyCode == 13 && time == 1)
+	 		{
+	 		    
+	 		    if(turnpart == 1)
+	 		    {
+	 		    	tempNum-=1;
+	 		    	totalbid-=document.getElementById(game[tempNum] + "bid").innerHTML
+	 		    	store.pop().style.visibility = "hidden"
+	 		    	document.getElementById(game[tempNum]+"numBid").innerHTML=parseInt(document.getElementById(game[tempNum]+"numBid").innerHTML)-parseInt(document.getElementById(game[tempNum] + "bid").innerHTML)
+	 		        document.getElementById(game[tempNum] + "bid").innerHTML = "-";
+	 		    }
+	 		    else if(tempNum == 0)
+	 		    {
+	 		        tempNum = game.length;
+	 		        tempNum--;
+	 		        turnpart *= -1
+	 		        store.pop().style.visibility = "hidden"
+	 		    	document.getElementById(game[tempNum]+"numBid").innerHTML=parseInt(document.getElementById(game[tempNum]+"numBid").innerHTML)-parseInt(document.getElementById(game[tempNum] + "bid").innerHTML)
+	 		        totalbid-=document.getElementById(game[tempNum] + "bid").innerHTML
+	 		        document.getElementById(game[tempNum] + "bid").innerHTML = "-";
+	 		        
+	 		    }
+	 		}
+	 	     
+	 		if(e.keyCode == 115 && time == 1)
+	 		{
+	 			for(var i =0; i < store.length; i++)
+	 			{
+	 				changeScore(store[i])
+	 			}
+	 			if(visScore == "visible")
+	 			{
+	 				visScore = "hidden"
+	 			}
+	 			else
+	 			{
+	 				visScore = "visible"
+	 			}
+	 			for(var i = 0; i < game.length; i++)
+	 			{
+	 				changeScore(document.getElementById(game[i]+"score"))
+	 				changeScore(document.getElementById(game[i]+"bid"))
+	 			}
+	 			changeScore(document.getElementById("turnofgame"))
+	 			changeScore(document.getElementById("overunder"))
+	 			changeScore(document.getElementById("divorder"))
+	 			changeScore(document.getElementById("bid"))
+	 			changeScore(document.getElementById("score"))
+	 		}
+	 		if(e.keyCode == 114 && beforeVis == "null")
+	 		{
+	 			console.log("test")
+	 			report("hidden")
+	 			if(visScore == "visible")
+	 			{
+	 				beforeVis = "hidden"
+	 			}
+	 			else
+	 			{
+	 				beforeVis = "visible"
+	 			}
+	 			
+	 			time = -1;
+	 		}
+	 		else if(e.keyCode == 114 && beforeVis != "null")
+	 		{
+	 			report("visible")
+	 			visScore = beforeVis
+	 			beforeVis = "null"
+	 			for(var i =0; i < store.length; i++)
+	 			{
+	 				changeScore(store[i])
+	 			}
+	 			if(visScore == "visible")
+	 			{
+	 				visScore = "hidden"
+	 			}
+	 			else
+	 			{
+	 				visScore = "visible"
+	 			}
+	 			for(var i = 0; i < game.length; i++)
+	 			{
+	 				changeScore(document.getElementById(game[i]+"score"))
+	 				changeScore(document.getElementById(game[i]+"bid"))
+	 			}
+	 			changeScore(document.getElementById("turnofgame"))
+	 			changeScore(document.getElementById("overunder"))
+	 			changeScore(document.getElementById("divorder"))
+	 			changeScore(document.getElementById("bid"))
+	 			changeScore(document.getElementById("score"))
+	 			time = 1;
+	 		}
+	 	}
+	 	function makeDiv(height, width, str, id, size)
+	 	{
+	 		 var div = document.createElement("div");
+                    div.style.marginLeft = width;
+                    div.style.marginTop = height;
+                    div.style.position = "absolute";
+                    div.innerHTML=str;
+                    div.style.fontSize=size;
+                    div.style.width = "20%"
+                    div.id = id;
+                    div.style.visibility = "hidden"
+                    if(id.indexOf("numTrick") != -1)
+                    {
+                    	div.setAttribute("onclick", "change(this)");
+                    }
+                    reportArr.push(div);
+                    document.body.appendChild(div);
+	 	}
+	 	function change(given)
+	 	{
+	 	    t = given
+	 	    document.getElementById("thumper").value = "";
+	 	    time*=-1; 
+	 	    window.removeEventListener("keypress", turn, false);
+	 	    t.style.visibility='hidden';
+	 	    input = document.getElementById("thump");
+	 	    input.style.marginTop = t.style.marginTop
+	 	    input.style.marginLeft = t.style.marginLeft
+	 	    input.style.position = "absolute";
+	 	    input.type = "text";
+	 	    input.style.width = "10%"
+	 	    input.style.visibility='visible';
+	 	    input.focus();
+	 	    document.getElementById("thumper").setAttribute("onkeyup", "final(event, input, t, this)")
+	 	    
+	 	}
+	 	function final(e, t, d, g)
+	 	{
+	 	    if(e.keyCode == 13)
+	 	    {
+	 	        var valtemp = g.value;
+	 	        var tempStore = d.innerHTML
+	 	        d.innerHTML = valtemp;
+	 	        t.style.visibility='hidden';
+	 	        d.style.visibility='visible';
+	 	        time*=-1
+	 	        window.addEventListener("keypress", turn, false);
+	 	        if(d.id.indexOf("name") != -1)
+	 	        {
+	 	        	console.log("testing")
+	 	        	game[game.indexOf(tempStore)] = valtemp;
+	 	        	document.getElementById(tempStore+"name").id = valtemp + "name";
+	 	        	document.getElementById(tempStore+"score").id = valtemp + "score";
+	 	        	document.getElementById(tempStore+"bid").id = valtemp + "bid";
+	 	        	document.getElementById(tempStore+"numBid").id = valtemp+"numBid";
+	 	        	document.getElementById(tempStore+"numBidMade").id = valtemp+"numBidMade";
+	 	        	document.getElementById(tempStore+"numTrick").id = valtemp+"numTrick";
+	 	        	document.getElementById(tempStore+"avgBid").id = valtemp+"avgBid";
+	 	        	document.getElementById(tempStore+"avgTricks").id = valtemp+"avgTricks";
+	 	        }
+	 	    }
+	 	}
+	 	function report(str)
+	 	{
+	 		console.log("testing")
+	 		visScore = str
+	 		for(var i =0; i < store.length; i++)
+	 			{
+	 				changeScore(store[i])
+	 			}
+	 			
+	 			for(var i = 0; i < game.length; i++)
+	 			{
+	 				changeScore(document.getElementById(game[i]+"score"))
+	 				changeScore(document.getElementById(game[i]+"bid"))
+	 			}
+	 			changeScore(document.getElementById("turnofgame"))
+	 			changeScore(document.getElementById("overunder"))
+	 			changeScore(document.getElementById("divorder"))
+	 			changeScore(document.getElementById("bid"))
+	 			changeScore(document.getElementById("score"))
+	 			if(visScore == "visible")
+	 			{
+	 				visScore = "hidden"
+	 			}
+	 			else
+	 			{
+	 				visScore = "visible"
+	 			}
+	 			for(var i = 0; i < reportArr.length;i++){
+	 				changeScore(reportArr[i])
+	 			}
+	 			
+	 	}
+	 	function changeScore(div)
+	 	{
+	 		div.style.visibility = visScore
+	 	}
+        </script>
+        <style type="text/css">
+            #turnofgame
+            {
+              margin-top:24%;
+              font-size:400%;
+              position:absolute;
+            }
+            #divorder
+            {
+              margin-top:30%;
+              font-size:400%;
+              position:absolute;
+            }
+            #overunder
+            {
+              margin-top:36%;
+              font-size:400%;
+              position:absolute;
+              
+            }
+            .scorecard
+            {
+            	font-size:250%;
+            	position:absolute;
+            	visibility:hidden;
+            }
+            .scorecardbid
+            {
+            	font-size:100%;
+            	position:absolute;
+            	visibility:hidden;
+            }
+        </style>
+    </head>
+    <body>
+        <input type="Number of Players" name="num" id = "num" autofocus = "on" onkeypress = "start(event)"/>
+        <button id = "done" onclick = "done()">Done</button>
+        <div id = "thump" style = "visibility: hidden;">
+        <input id="thumper"/>
+        </div>
+        <div id = "turnofgame"></div>
+        <div id = "divorder"></div>
+        <div id = "overunder"></div>
+        <div id="audio"></div>
+    </body>
+</html></title>
+</head>
+<body>
+
+</body>
+</html>
